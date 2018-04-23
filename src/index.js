@@ -4,7 +4,3 @@ import './index.css';
 import WorkforceTouch from './WorkforceTouch';
 
 ReactDOM.render(<WorkforceTouch />, document.getElementById('root'));
-
-if (module.hot) {
-    module.hot.accept();
-}

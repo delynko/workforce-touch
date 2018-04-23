@@ -1,5 +1,7 @@
 .zip-list {
-    width: 50%;
+    font-family: "Times New Roman", Times, serif;
+    width: 31%;
     text-align: center;
-    color: blue;
+    color: black;
+    z-index: 1;
 }

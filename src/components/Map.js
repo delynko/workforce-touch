@@ -3,15 +3,22 @@ import ReactMapboxGl from "react-mapbox-gl";
 import { ZoomControl, Source, Layer } from "react-mapbox-gl";
 import DrawControl from 'react-mapbox-gl-draw';
 import mapboxgl from 'mapbox-gl';
+import turf from '@turf/turf';
+import { point, polygon } from '@turf/helpers';
+import buffer from '@turf/buffer';
+import intersect from '@turf/intersect';
 import axios from 'axios';
 import ZipList from '../components/ZipList'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import '../styles/WorkforceTouch.css';
-import triCountyBoundary from '../data/tricountyboundary'
 
 const Map = ReactMapboxGl ({
     accessToken: 'pk.eyJ1IjoiZGVseW5rbyIsImEiOiJjaXBwZ3hkeTUwM3VuZmxuY2Z5MmFqdnU2In0.ac8kWI1ValjdZBhlpMln3w'
-})
+});
+
+const triCountyBoundaryUrl = 'http://awdagis01.admin.co.jeffco.us/arcgis/rest/services/WorkforceTouch/WorkforceTouch/MapServer/3/query?where=1%3D1&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=geojson';
+
+const tricountyZipCodeUrl = 'http://awdagis01.admin.co.jeffco.us/arcgis/rest/services/WorkforceTouch/WorkforceTouch/MapServer/2/query?where=1%3D1&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=geojson';
 
 class MapBoxMap extends Component {
     constructor(props){
@@ -28,15 +35,20 @@ class MapBoxMap extends Component {
     }
 
     handleLoad(map, evt){
-        map.addSource('county', {
+        map.addSource('triCountyBoundary', {
             type: 'geojson',
-            data: triCountyBoundary
+            data: triCountyBoundaryUrl
+        });
+
+        map.addSource('triCountyZipCode', {
+            type: 'geojson',
+            data: tricountyZipCodeUrl
         });
 
         map.addLayer({
-            "id": "county",
+            "id": "triCountyBoundary", 
             "type": "line",
-            "source": "county",
+            "source": "triCountyBoundary",
             "layout": {},
             "paint": {
                 "line-color": "#263F6A",
@@ -47,15 +59,68 @@ class MapBoxMap extends Component {
 
     handleDrawCreate(evt){
         const map = evt.target;
-        
-        map.fitBounds(map.getBounds(evt));
 
-        this.setState(() => {
-            return {
-                zipCodes: ['80020', '80323', '80401'],
-                jobs: [{zip: '80020', jobTitle: 'Mechanic'}, {zip: '80323', jobTitle: 'IT Specialist'}, {zip: '80401', jobTitle: 'Cashier'}]
-            };
+        const pointToBuffer = point([evt.features[0].geometry.coordinates[0], evt.features[0].geometry.coordinates[1]]);
+        
+        const bufferResult = buffer(pointToBuffer, 1, {units: 'miles'});
+
+        let newZips = [];
+        let jobList = [];
+
+        axios.get(tricountyZipCodeUrl)
+        .then((res) => {
+            const zipCodes = res.data.features
+            zipCodes.map((zipCode) => {
+                zipCode.geometry.type = 'Polygon';
+                const newPolygon = polygon(zipCode.geometry.coordinates);
+                newPolygon.properties.ZIP = zipCode.properties.ZIP;
+                newPolygon.properties.POSTALCITYNAME = zipCode.properties.POSTALCITYNAME;
+
+                if (intersect(bufferResult, newPolygon)) {
+                    newZips.push(newPolygon.properties.ZIP);
+                    map.addSource('zipLayer' + newPolygon.properties.ZIP, {
+                        type: 'geojson',
+                        data: newPolygon
+                    });
+                    map.addLayer({
+                        "id": 'zipLayer' + newPolygon.properties.ZIP,
+                        "type": "line",
+                        "source": 'zipLayer' + newPolygon.properties.ZIP,
+                        "layout": {},
+                        "paint": {
+                            "line-color": "#263F6A",
+                            "line-width": 3
+                        }
+                    });
+                    axios.get(`http://awdagis01.admin.co.jeffco.us/arcgis/rest/services/WorkforceTouch/WorkforceTouch/MapServer/4/query?where=ZIP%3D%27${newPolygon.properties.ZIP}%27&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=false&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson`)
+                    .then((res) => {
+                        jobList.push({
+                            ZIP: newPolygon.properties.ZIP,
+                            jobs: res.data.features
+                        });
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+
+
+                }
+            })
+        })
+        .catch((err) => {
+            console.log(err);
         });
+
+        setTimeout(() => {
+            newZips.sort()
+            this.setState(() => {
+                return {
+                    title: '',
+                    zipCodes: newZips,
+                    jobs: jobList
+                };
+            });
+        }, 1000)
+
     }
 
     render() {
