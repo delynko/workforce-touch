@@ -1,0 +1,40 @@
+.not-visible {
+    display: none;
+}
+
+.desc-not-visible {
+    display: none;
+}
+
+.job-title {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.employer {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.ft-pt {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.co-number {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.job-container {
+    border-bottom-style: solid;
+    border-bottom-color: black;
+    border-bottom-width: 1
+}
+
+.job-list-container {
+    padding: 0;
+    margin: 0;
+    color: blue;
+    justify-content: space-between;
+}

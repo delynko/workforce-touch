@@ -11,6 +11,7 @@ import axios from 'axios';
 import ZipList from '../components/ZipList'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import '../styles/WorkforceTouch.css';
+import { isAbsolute } from 'path';
 
 const Map = ReactMapboxGl ({
     accessToken: 'pk.eyJ1IjoiZGVseW5rbyIsImEiOiJjaXBwZ3hkeTUwM3VuZmxuY2Z5MmFqdnU2In0.ac8kWI1ValjdZBhlpMln3w'
@@ -26,7 +27,6 @@ class MapBoxMap extends Component {
         this.handleDrawCreate = this.handleDrawCreate.bind(this);
         this.handleLoad = this.handleLoad.bind(this);
         this.state = {
-          title: 'Jobs Flow Here',
           mapCenter: [-105.41, 39.54],
           mapZoom: [9],
           zipCodes: [],
@@ -96,6 +96,7 @@ class MapBoxMap extends Component {
                     .then((res) => {
                         jobList.push({
                             ZIP: newPolygon.properties.ZIP,
+                            city: newPolygon.properties.POSTALCITYNAME,
                             jobs: res.data.features
                         });
                     }).catch((err) => {
@@ -114,7 +115,6 @@ class MapBoxMap extends Component {
             newZips.sort()
             this.setState(() => {
                 return {
-                    title: '',
                     zipCodes: newZips,
                     jobs: jobList
                 };
@@ -133,7 +133,7 @@ class MapBoxMap extends Component {
                     style="mapbox://styles/mapbox/streets-v9"
                     containerStyle={{
                         height: "100vh",
-                        width: "69vw",
+                        width: "67vw",
                         margin: 0
                     }}
                     onStyleLoad={this.handleLoad}

@@ -5,27 +5,32 @@ import '../styles/zip-list.css';
 class ZipList extends Component {
     constructor(props){
         super(props);
-        this.handleTitleClick = this.handleTitleClick.bind(this);
+        this.handleJobsInClick = this.handleJobsInClick.bind(this);
     }
 
-    handleTitleClick(){
-        console.log(this.props.jobs);    
+    handleJobsInClick(e){
+        e.target.nextElementSibling.classList.contains("not-visible") ? e.target.nextElementSibling.classList.remove("not-visible") : e.target.nextElementSibling.classList.add("not-visible");       
     }
 
-    render(){        
+    render(){
+
         
+                
         return (
             <div className="zip-list">
-                <p
-                    onClick={this.handleTitleClick}
-                >
-                    {this.props.title}
-                </p>
                 {this.props.jobs.map((zip)=>{
                     return(
                         <div key={zip.ZIP + '-container'} className={zip.ZIP + '-container'}>
-                            <h1>Jobs in {zip.ZIP}</h1>
-                            <JobList jobs={zip.jobs} />
+                            <h2
+                                onClick={this.handleJobsInClick}
+                                id={zip.ZIP + '-container'}
+                            >
+                            Jobs in {zip.ZIP} ({zip.city})
+                            </h2>
+                            <JobList
+                                jobs={zip.jobs}
+                                zip={zip.ZIP}
+                            />
                         </div>
                     )
                 })}

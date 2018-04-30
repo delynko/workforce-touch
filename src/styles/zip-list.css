@@ -1,7 +1,12 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
 .zip-list {
-    font-family: "Times New Roman", Times, serif;
-    width: 31%;
-    text-align: center;
+    font-family: "Open Sans";
+    width: 31vw;
+    height: 100%;
     color: black;
-    z-index: 1;
+    overflow-y: auto;
+    position: fixed;
+    right: 1em;
 }
+ 
