@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 import JobList from './JobList';
 import '../styles/zip-list.css';
 
@@ -13,20 +14,13 @@ class ZipList extends Component {
     }
 
     render(){
-
-        
-                
+               
         return (
             <div className="zip-list">
                 {this.props.jobs.map((zip)=>{
                     return(
-                        <div key={zip.ZIP + '-container'} className={zip.ZIP + '-container'}>
-                            <h2
-                                onClick={this.handleJobsInClick}
-                                id={zip.ZIP + '-container'}
-                            >
-                            Jobs in {zip.ZIP} ({zip.city})
-                            </h2>
+                        <div key={zip.ZIP + '-container'} className={'zip-jobs-container'}>
+                            <h3 className={'zip-title'} onClick={this.handleJobsInClick}>Jobs in {zip.ZIP} ({zip.city})</h3>
                             <JobList
                                 jobs={zip.jobs}
                                 zip={zip.ZIP}

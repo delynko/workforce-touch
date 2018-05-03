@@ -1,0 +1,21 @@
+.job-title, .co-number {
+    margin-left: 5px;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.employer, .ft-pt {
+    margin-left: 5px;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.job {
+    display: flex;
+    justify-content: space-between
+}
+
+img {
+    height: 35px;
+    margin-top: 20px;
+}

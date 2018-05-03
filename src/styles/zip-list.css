@@ -5,8 +5,19 @@
     width: 31vw;
     height: 100%;
     color: black;
-    overflow-y: auto;
     position: fixed;
+    overflow: auto;
     right: 1em;
 }
- 
+
+.zip-title {
+    color: rgba(38, 63, 106, 1);
+    background-color: #D1DFD6;
+    text-align: center;
+    padding: 15px;
+}
+
+.zip-title:active {
+    color: #D1DFD6;
+    background-color:rgba(38, 63, 106, 1);
+}

@@ -9,6 +9,7 @@
     "@turf/intersect": "^6.1.1",
     "@turf/turf": "^5.1.6",
     "axios": "^0.18.0",
+    "lodash": "^4.17.10",
     "mapbox-gl": "^0.44.2",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
