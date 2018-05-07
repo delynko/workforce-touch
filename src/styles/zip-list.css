@@ -4,6 +4,7 @@
     font-family: "Open Sans";
     width: 31vw;
     height: 100%;
+    top: 40px;
     color: black;
     position: fixed;
     overflow: auto;

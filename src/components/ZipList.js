@@ -20,7 +20,12 @@ class ZipList extends Component {
                 {this.props.jobs.map((zip)=>{
                     return(
                         <div key={zip.ZIP + '-container'} className={'zip-jobs-container'}>
-                            <h3 className={'zip-title'} onClick={this.handleJobsInClick}>Jobs in {zip.ZIP} ({zip.city})</h3>
+                            <h3
+                                className={'zip-title'}
+                                onClick={this.handleJobsInClick}
+                            >
+                                Jobs in {zip.ZIP} ({zip.city})
+                            </h3>
                             <JobList
                                 jobs={zip.jobs}
                                 zip={zip.ZIP}

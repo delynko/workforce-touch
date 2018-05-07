@@ -141,4 +141,3 @@ const jobIcon = (onet) => {
 };
 
 export default Job;
-

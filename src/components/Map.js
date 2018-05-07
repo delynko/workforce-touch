@@ -134,7 +134,8 @@ class MapBoxMap extends Component {
                     containerStyle={{
                         height: "100vh",
                         width: "67vw",
-                        margin: 0
+                        margin: 0,
+                        top: 40,
                     }}
                     onStyleLoad={this.handleLoad}
                     >

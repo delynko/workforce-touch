@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+.reset-button {
+    font-family: "Open Sans";
+    background-color: #D1DFD6;
+    border-style: none;
+    border-radius: 2px;
+    height: 35px;
+    margin-top: 2px;
+    color: rgba(38, 63, 106, 1);
+}
