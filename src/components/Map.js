@@ -8,10 +8,11 @@ import { point, polygon } from '@turf/helpers';
 import buffer from '@turf/buffer';
 import intersect from '@turf/intersect';
 import axios from 'axios';
-import ZipList from '../components/ZipList'
+import ZipList from '../components/ZipList';
+import ResetButton from './ResetButton';
+import Header from '../components/Header';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import '../styles/WorkforceTouch.css';
-import { isAbsolute } from 'path';
 
 const Map = ReactMapboxGl ({
     accessToken: 'pk.eyJ1IjoiZGVseW5rbyIsImEiOiJjaXBwZ3hkeTUwM3VuZmxuY2Z5MmFqdnU2In0.ac8kWI1ValjdZBhlpMln3w'
@@ -26,11 +27,13 @@ class MapBoxMap extends Component {
         super(props);
         this.handleDrawCreate = this.handleDrawCreate.bind(this);
         this.handleLoad = this.handleLoad.bind(this);
+        this.handleResetButtonClick = this.handleResetButtonClick.bind(this);
         this.state = {
           mapCenter: [-105.41, 39.54],
           mapZoom: [9],
           zipCodes: [],
-          jobs: []
+          jobs: [],
+          resetButtonVisibility: 'hidden'
         };
     }
 
@@ -58,6 +61,7 @@ class MapBoxMap extends Component {
     }
 
     handleDrawCreate(evt){
+
         const map = evt.target;
 
         const pointToBuffer = point([evt.features[0].geometry.coordinates[0], evt.features[0].geometry.coordinates[1]]);
@@ -116,17 +120,34 @@ class MapBoxMap extends Component {
             this.setState(() => {
                 return {
                     zipCodes: newZips,
-                    jobs: jobList
+                    jobs: jobList,
+                    resetButtonVisibility: ''
                 };
             });
         }, 1000)
 
     }
 
+    handleResetButtonClick() {
+        console.log('clicked');
+        this.setState(() => {
+            return {
+                resetButtonVisibility: 'hidden',
+                zipCodes: [],
+                jobs: [],
+            };
+        });
+    }
+
     render() {
 
         return (
             <div className="main-app">
+                <ResetButton
+                    visibility={this.state.resetButtonVisibility}
+                    onClick={this.handleResetButtonClick}
+                />
+                <Header />
                 <Map
                     center={this.state.mapCenter}
                     zoom={this.state.mapZoom}

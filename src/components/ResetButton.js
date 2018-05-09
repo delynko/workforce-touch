@@ -4,18 +4,17 @@ import '../styles/reset-button.css';
 class ResetButton extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            visibility: 'hidden'
-        }
     }
 
     render() {
+
         return(
             <button
                 className="reset-button"
-                // style={{visibility: this.state.visibility}}
+                style={{visibility: this.props.visibility}}
+                onClick={this.props.onClick}
             >
-                New Search
+                <b>New Search</b>
             </button>
         )
     }
