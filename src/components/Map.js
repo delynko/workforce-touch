@@ -128,8 +128,9 @@ class MapBoxMap extends Component {
 
     }
 
-    handleResetButtonClick() {
-        console.log('clicked');
+    handleResetButtonClick(e) {
+        e.preventDefault();
+        console.log(document.getElementsByClassName('mapboxgl-map'));
         this.setState(() => {
             return {
                 resetButtonVisibility: 'hidden',
@@ -146,6 +147,7 @@ class MapBoxMap extends Component {
                 <ResetButton
                     visibility={this.state.resetButtonVisibility}
                     onClick={this.handleResetButtonClick}
+                    map={Map}
                 />
                 <Header />
                 <Map
