@@ -67,13 +67,15 @@ class MapBoxMap extends Component {
 
         const map = evt.target;
 
+        mappy = map;
+
         map.getStyle().layers.map((layer) => {
             if (layer.id.includes('zipLayer')){
                 map.removeLayer(layer.id);
             }           
         });
 
-        mappy = map;
+        
 
         const pointToBuffer = point([evt.features[0].geometry.coordinates[0], evt.features[0].geometry.coordinates[1]]);
 
@@ -100,6 +102,10 @@ class MapBoxMap extends Component {
 
                 if (intersect(bufferResult, newPolygon)) {
                     newZips.push(newPolygon.properties.ZIP);
+
+// do something with this source to remove it on "New Search Button click"
+
+
                     map.addSource('zipLayer' + newPolygon.properties.ZIP, {
                         type: 'geojson',
                         data: newPolygon
@@ -116,20 +122,22 @@ class MapBoxMap extends Component {
                     });
                     axios.get(`http://awdagis01.admin.co.jeffco.us/arcgis/rest/services/WorkforceTouch/WorkforceTouch/MapServer/4/query?where=ZIP%3D%27${newPolygon.properties.ZIP}%27&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=false&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson`)
                     .then((res) => {
+                        let onetsJobs = [];
                         let onets = [];
                         res.data.features.map((job) => {
-                           
-                            onets.push(job.attributes.ONETCat);
+                            onets.push(job.attributes.ONETCat)
+                            onetsJobs.push({onet: job.attributes.ONETCat, job: job});
                         });
                         var unique = onets.filter((item, i, ar) => { return ar.indexOf(item) === i; });
 
                         unique.sort();
-                        console.log(unique);
 
                         jobList.push({
                             ZIP: newPolygon.properties.ZIP,
                             city: newPolygon.properties.POSTALCITYNAME,
-                            jobs: res.data.features
+                            jobs: res.data.features,
+                            onets: unique,
+                            jobsOnets: onetsJobs
                         });
                     }).catch((err) => {
                         console.log(err);
@@ -154,11 +162,13 @@ class MapBoxMap extends Component {
     }
 
     handleResetButtonClick(e) {
+        console.log(mappy.getStyle().layers);
         mappy.getStyle().layers.map((layer) => {
             if (layer.id.includes('zipLayer')){
                 mappy.removeLayer(layer.id);
             }           
         });
+        console.log(mappy.getStyle().layers);
         this.setState(() => {
             return {
                 ButtonVisibility: 'hidden',

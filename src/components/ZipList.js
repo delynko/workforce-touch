@@ -28,6 +28,7 @@ class ZipList extends Component {
                             <JobList
                                 jobs={zip.jobs}
                                 zip={zip.ZIP}
+                                jobOnets={this.props.jobs}
                             />
                         </div>
                     )
