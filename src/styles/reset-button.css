@@ -7,8 +7,11 @@
     border-radius: 2px;
     height: 35px;
     margin-top: 2px;
-    position: fixed;
-    right: 5px;
+    margin-right: 5px;
     z-index: 100000;
     color: rgba(38, 63, 106, 1);
+}
+
+.button-container {
+    right: 2px;
 }

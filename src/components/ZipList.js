@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import _ from 'lodash';
 import JobList from './JobList';
 import '../styles/zip-list.css';
 
@@ -36,8 +35,6 @@ class ZipList extends Component {
 
             </div>
         )
-
-        
     }
 }
 

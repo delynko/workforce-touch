@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
 import ReactMapboxGl from "react-mapbox-gl";
-import { ZoomControl, Source, Layer } from "react-mapbox-gl";
+import { ZoomControl } from "react-mapbox-gl";
 import DrawControl from 'react-mapbox-gl-draw';
-import mapboxgl from 'mapbox-gl';
-import turf from '@turf/turf';
 import { point, polygon } from '@turf/helpers';
 import buffer from '@turf/buffer';
 import intersect from '@turf/intersect';
 import axios from 'axios';
 import ZipList from '../components/ZipList';
-import ResetButton from './ResetButton';
+import Button from './Button';
 import Header from '../components/Header';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import '../styles/WorkforceTouch.css';
+import '../styles/button-container.css';
+
+let mappy = "";
 
 const Map = ReactMapboxGl ({
     accessToken: 'pk.eyJ1IjoiZGVseW5rbyIsImEiOiJjaXBwZ3hkeTUwM3VuZmxuY2Z5MmFqdnU2In0.ac8kWI1ValjdZBhlpMln3w'
@@ -28,16 +29,18 @@ class MapBoxMap extends Component {
         this.handleDrawCreate = this.handleDrawCreate.bind(this);
         this.handleLoad = this.handleLoad.bind(this);
         this.handleResetButtonClick = this.handleResetButtonClick.bind(this);
+        this.handleRefreshButtonClick = this.handleRefreshButtonClick.bind(this);
         this.state = {
-          mapCenter: [-105.41, 39.54],
+          mapCenter: [-105.43, 39.53],
           mapZoom: [9],
           zipCodes: [],
           jobs: [],
-          resetButtonVisibility: 'hidden'
+          ButtonVisibility: 'hidden'
         };
     }
 
     handleLoad(map, evt){
+
         map.addSource('triCountyBoundary', {
             type: 'geojson',
             data: triCountyBoundaryUrl
@@ -64,7 +67,22 @@ class MapBoxMap extends Component {
 
         const map = evt.target;
 
+        map.getStyle().layers.map((layer) => {
+            if (layer.id.includes('zipLayer')){
+                map.removeLayer(layer.id);
+            }           
+        });
+
+        mappy = map;
+
         const pointToBuffer = point([evt.features[0].geometry.coordinates[0], evt.features[0].geometry.coordinates[1]]);
+
+        this.setState(() => {
+            return {
+                mapCenter: [evt.features[0].geometry.coordinates[0], evt.features[0].geometry.coordinates[1]],
+                mapZoom: [12]
+            }
+        })
         
         const bufferResult = buffer(pointToBuffer, 1, {units: 'miles'});
 
@@ -98,6 +116,16 @@ class MapBoxMap extends Component {
                     });
                     axios.get(`http://awdagis01.admin.co.jeffco.us/arcgis/rest/services/WorkforceTouch/WorkforceTouch/MapServer/4/query?where=ZIP%3D%27${newPolygon.properties.ZIP}%27&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=false&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson`)
                     .then((res) => {
+                        let onets = [];
+                        res.data.features.map((job) => {
+                           
+                            onets.push(job.attributes.ONETCat);
+                        });
+                        var unique = onets.filter((item, i, ar) => { return ar.indexOf(item) === i; });
+
+                        unique.sort();
+                        console.log(unique);
+
                         jobList.push({
                             ZIP: newPolygon.properties.ZIP,
                             city: newPolygon.properties.POSTALCITYNAME,
@@ -106,8 +134,6 @@ class MapBoxMap extends Component {
                     }).catch((err) => {
                         console.log(err);
                     });
-
-
                 }
             })
         })
@@ -121,34 +147,51 @@ class MapBoxMap extends Component {
                 return {
                     zipCodes: newZips,
                     jobs: jobList,
-                    resetButtonVisibility: ''
+                    ButtonVisibility: '',
                 };
             });
         }, 1000)
-
     }
 
     handleResetButtonClick(e) {
-        e.preventDefault();
-        console.log(document.getElementsByClassName('mapboxgl-map'));
+        mappy.getStyle().layers.map((layer) => {
+            if (layer.id.includes('zipLayer')){
+                mappy.removeLayer(layer.id);
+            }           
+        });
         this.setState(() => {
             return {
-                resetButtonVisibility: 'hidden',
+                ButtonVisibility: 'hidden',
                 zipCodes: [],
                 jobs: [],
+                mapCenter: [-105.41, 39.54],
+                mapZoom: [9],
             };
         });
+    }
+
+    handleRefreshButtonClick(){
+        window.location.reload();
     }
 
     render() {
 
         return (
             <div className="main-app">
-                <ResetButton
-                    visibility={this.state.resetButtonVisibility}
-                    onClick={this.handleResetButtonClick}
-                    map={Map}
-                />
+                <div className="button-container">
+                    <Button
+                        visibility={this.state.ButtonVisibility}
+                        onClick={this.handleResetButtonClick}
+                        words="New Search"
+                        style={{right: 0}}
+                    />
+                    <Button
+                        visibility={this.state.ButtonVisibility}
+                        onClick={this.handleRefreshButtonClick}
+                        words="Refresh for Next User"
+                        style={{left: 0}}
+                    />
+                </div>
                 <Header />
                 <Map
                     center={this.state.mapCenter}
