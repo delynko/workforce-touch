@@ -103,13 +103,11 @@ class MapBoxMap extends Component {
                 if (intersect(bufferResult, newPolygon)) {
                     newZips.push(newPolygon.properties.ZIP);
 
-// do something with this source to remove it on "New Search Button click"
-
-
                     map.addSource('zipLayer' + newPolygon.properties.ZIP, {
                         type: 'geojson',
                         data: newPolygon
                     });
+
                     map.addLayer({
                         "id": 'zipLayer' + newPolygon.properties.ZIP,
                         "type": "line",
@@ -162,13 +160,12 @@ class MapBoxMap extends Component {
     }
 
     handleResetButtonClick(e) {
-        console.log(mappy.getStyle().layers);
         mappy.getStyle().layers.map((layer) => {
             if (layer.id.includes('zipLayer')){
                 mappy.removeLayer(layer.id);
+                mappy.removeSource(layer.id);
             }           
         });
-        console.log(mappy.getStyle().layers);
         this.setState(() => {
             return {
                 ButtonVisibility: 'hidden',
