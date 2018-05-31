@@ -12,10 +12,32 @@
 
 .job {
     display: flex;
-    justify-content: space-between
+    justify-content: space-between;
+    width: 85%;
+    margin-left: 7.5%;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-color: lightgray;
 }
 
 .job-icon {
     height: 35px;
-    margin-top: 20px;
+    margin-top: 8px;
+}
+
+.not-visible {
+    display: none;
+}
+
+.desc-not-visible {
+    display: none;
+}
+
+.job-container {
+    background-color: rgba(38, 63, 106, .2);
+    border-radius: 2px;
+    color: rgba(38, 63, 106, 1);
+    padding: 4px;
+    margin-bottom: 3px;
+
 }
