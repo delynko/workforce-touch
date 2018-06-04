@@ -7,6 +7,7 @@ import buffer from '@turf/buffer';
 import intersect from '@turf/intersect';
 import axios from 'axios';
 import ZipList from '../components/ZipList';
+import Intro from '../components/Intro';
 import Button from './Button';
 import Header from '../components/Header';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
@@ -64,6 +65,11 @@ class MapBoxMap extends Component {
     }
 
     handleDrawCreate(evt){
+
+        const introElement = document.getElementById('remove-intro');
+        if (introElement) {
+            introElement.remove();
+        }
 
         const map = evt.target;
 
@@ -227,6 +233,7 @@ class MapBoxMap extends Component {
                         position='top-left'
                     />
                 </Map>
+                <Intro />
                 <ZipList title={this.state.title} zip_codes={this.state.zipCodes} jobs={this.state.jobs}/>
             </div>
         );

@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+.remove-intro {
+    font-family: "Open Sans";
+    width: 31vw;
+    height: 90%;
+    margin-top: 40px;
+    color: black;
+    position: absolute;
+    overflow: auto;
+    right: 1em;
+    z-index: 1000;
+    text-align: center;
+    color: #263F6A;
+    overflow: hidden;
+}
+
+.intro-p-tag {
+    text-align: center;
+}
+
+.intro-p-tag img {
+    height: 150px;
+}
+
+.intro-welcome {
+    text-align: center;
+    font-family: "Open Sans";
+}
+
+#get-started img, #layers img {
+    vertical-align: bottom;
+    height: 25px
+}
