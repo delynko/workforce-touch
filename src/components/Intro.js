@@ -17,7 +17,7 @@ class Intro extends Component {
                 <br/>
                 <p className="intro-p-tag">This interactive map will allow you to select a location on the map and see a list of jobs that are within the closest ZIP codes.</p>
                 <p className="intro-p-tag" id="get-started"><br/>To get started, much like a smart phone, use two fingers to zoom to a location on a map. Once there, simply tap the <img src={draw} alt="Draw Marker Icon" title="Draw Marker Icon"/> icon (upper left), then tap a location on the map.</p>
-                <p class="intro-p-tag"><br/>A list of ZIP codes will appear on the right side of the screen. Tap any of these to see the jobs in a ZIP code. Then, tap a job title to get more information about that position.</p>
+                <p className="intro-p-tag"><br/>A list of ZIP codes will appear on the right side of the screen. Tap any of these to see the jobs in a ZIP code. Then, tap a job title to get more information about that position.</p>
             </div>
         )
     }

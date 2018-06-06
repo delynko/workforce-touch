@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import ReactMapboxGl from "react-mapbox-gl";
+import ReactMapboxGl, { Popup } from "react-mapbox-gl";
+import mapboxgl from "mapbox-gl";
 import { ZoomControl } from "react-mapbox-gl";
 import DrawControl from 'react-mapbox-gl-draw';
 import { point, polygon } from '@turf/helpers';
@@ -115,6 +116,17 @@ class MapBoxMap extends Component {
                     });
 
                     map.addLayer({
+                        "id": 'poly-zipLayer' + newPolygon.properties.ZIP,
+                        "type": "fill",
+                        "source": 'zipLayer' + newPolygon.properties.ZIP,
+                        "layout": {},
+                        "paint": {
+                            "fill-color": "#FFFFFF",
+                            "fill-opacity": 0
+                        }
+                    });
+
+                    map.addLayer({
                         "id": 'zipLayer' + newPolygon.properties.ZIP,
                         "type": "line",
                         "source": 'zipLayer' + newPolygon.properties.ZIP,
@@ -124,6 +136,18 @@ class MapBoxMap extends Component {
                             "line-width": 3
                         }
                     });
+
+                    map.on('click', `poly-zipLayer${newPolygon.properties.ZIP}`, (e) => {
+                        const coordinates = e.features[0].geometry.coordinates.slice();
+                        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                        }
+                        new mapboxgl.Popup()
+                        .setLngLat({lng: e.lngLat.lng, lat: e.lngLat.lat})
+                        .setHTML(`<br>ZIP Code: <strong>${e.features[0].properties.ZIP}</strong>`)
+                        .addTo(map);
+                    });
+
                     axios.get(`http://awdagis01.admin.co.jeffco.us/arcgis/rest/services/WorkforceTouch/WorkforceTouch/MapServer/4/query?where=ZIP%3D%27${newPolygon.properties.ZIP}%27&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=false&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson`)
                     .then((res) => {
                         let onetsJobs = [];
@@ -162,7 +186,11 @@ class MapBoxMap extends Component {
                     ButtonVisibility: '',
                 };
             });
-        }, 1000)
+        }, 1000);
+
+
+
+
     }
 
     handleResetButtonClick(e) {
@@ -234,7 +262,7 @@ class MapBoxMap extends Component {
                     />
                 </Map>
                 <Intro />
-                <ZipList title={this.state.title} zip_codes={this.state.zipCodes} jobs={this.state.jobs}/>
+                <ZipList title={this.state.title} zip_codes={this.state.zipCodes} jobs={this.state.jobs} map={mappy}/>
             </div>
         );
     }
